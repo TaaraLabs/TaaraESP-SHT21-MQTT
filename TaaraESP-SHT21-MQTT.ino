@@ -30,14 +30,14 @@ const int interval  = 5; // send readings every 5 minutes
 const int LED       = 13;
 const int BUTTON    = 0; // program button is available after power-up for entering configPortal
 
-struct CONFIG {          // config data is very easy to read and write in the EEPROM using struct
+struct CONFIG {          // config data structure
   char host[40];         // MQTT Server name
   char topic[32];        // MQTT Topic
   char user[32];         // MQTT Username
   char pass[32];         // MQTT Password
   byte checksum;         // Calculating real CRC is too hard
 };
-const byte checksum = 73;
+const byte checksum = 136;
 
 CONFIG conf;             // initialize conf struct
 
@@ -97,17 +97,17 @@ void setup() {
     #ifdef DEBUG
     Serial.println("The checksum does not match, clearing data");
     #endif    
-    memset(conf.host,   0, sizeof(conf.host));
-    memset(conf.topic,  0, sizeof(conf.topic));
-    memset(conf.user,   0, sizeof(conf.user));
-    memset(conf.pass,   0, sizeof(conf.pass));
+    memset(conf.host,  0, sizeof(conf.host));
+    memset(conf.topic, 0, sizeof(conf.topic));
+    memset(conf.user,  0, sizeof(conf.user));
+    memset(conf.pass,  0, sizeof(conf.pass));
   }
   
   #ifdef DEBUG
-  Serial.print("host: ");   Serial.println(conf.host);
-  Serial.print("topic: ");  Serial.println(conf.topic);
-  Serial.print("user: ");   Serial.println(conf.user);
-  Serial.print("pass: ");   Serial.println(conf.pass);
+  Serial.print("host: ");  Serial.println(conf.host);
+  Serial.print("topic: "); Serial.println(conf.topic);
+  Serial.print("user: ");  Serial.println(conf.user);
+  Serial.print("pass: ");  Serial.println(conf.pass);
   #endif
 
   WiFiManagerParameter custom_host("conf.host",   "MQTT server", conf.host,  40);
@@ -125,7 +125,6 @@ void setup() {
   wifiManager.addParameter(&custom_topic);
   wifiManager.addParameter(&custom_user);
   wifiManager.addParameter(&custom_pass);
-
 
   pinMode(BUTTON, INPUT);
 
@@ -147,7 +146,7 @@ void setup() {
   Serial.println("Config button was not pressed");
   #endif
 
-  if (save == true) {                                       // if save flag is set by the callback function of the wifiManager
+  if (save == true) {                                      // if save flag is set by the callback function of the wifiManager
     Serial.println("Saving config");
     strcpy(conf.host,  custom_host.getValue());            // read the data from wifiManager registers
     strcpy(conf.topic, custom_topic.getValue());
